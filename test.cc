@@ -9,15 +9,14 @@ void func() {
 
 int main(int argc, char** argv) {
 
-    ThreadPool pool(5);
+    ThreadPool pool(10);
 
-    auto f = [](){
-        std::stringstream sstream;
-        sstream << "Hello from thread " << std::this_thread::get_id() << " " << "\n";
-        std::cout << sstream.str(); 
-    };
-
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 20; i++) {
+        auto f = [i]() {
+            std::stringstream sstream;
+            sstream << "Hello from thread " << std::this_thread::get_id() << " " << i << "\n";
+            std::cerr << sstream.str(); 
+        };
         pool.Schedule(f);
     }
     return 0;

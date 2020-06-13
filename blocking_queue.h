@@ -33,6 +33,10 @@ template <class T> class BlockingQueue {
             cond_var_.notify_all();
         }
 
+        bool Empty() {
+            return queue_.empty();
+        }
+
     private:
         std::atomic_bool &active_; //So the user can signal to stop blocking
         std::queue<T> queue_;

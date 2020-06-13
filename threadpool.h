@@ -36,7 +36,7 @@ class ThreadPool {
         std::atomic_bool active_;
 
         void ThreadWorkLoop() {
-            while (active_) {
+            while (active_ || !queue_.Empty()) {
                 std::function<void()> f(queue_.Dequeue());
                 if (f != NULL) f();
             } 
