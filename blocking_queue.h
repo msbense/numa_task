@@ -4,11 +4,10 @@
 #include <atomic>
 #include <condition_variable>
 
-//Blocks on dequeue when empty
+//Blocks on dequeue when queue empty
 template <class T> class BlockingQueue {
 
     public:
-        // BlockingQueue() {}
         BlockingQueue(std::atomic_bool &break_pred) : active_(break_pred) {}
 
         void Enqueue(T t) {
@@ -38,7 +37,7 @@ template <class T> class BlockingQueue {
         }
 
     private:
-        std::atomic_bool &active_; //So the user can signal to stop blocking
+        std::atomic_bool &active_; //So the user can signal to stop blocking when empty
         std::queue<T> queue_;
         std::mutex mutex_;
         std::condition_variable cond_var_;

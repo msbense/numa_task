@@ -14,5 +14,6 @@ void ELog(std::string msg) {
 void ThreadLog(std::string msg) {
     std::stringstream sstream;
     sstream << "Thread " << std::this_thread::get_id() << ": " << msg << std::endl;   
+    std::cerr << sstream.str();
 }
 
