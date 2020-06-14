@@ -1,2 +1,2 @@
 all:
-	g++ -O3 test.cc -o test.o -lpthread
+	g++ -O3 test.cc -o test.o -lpthread -lhwloc

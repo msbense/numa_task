@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <hwloc.h>
 #include "logging.h"
@@ -21,7 +22,7 @@ bool HaveHwlocTopology() {
     return init;
 }
 
-int NumNUMANodes() {
+int NUMANumNodes() {
     if (HaveHwlocTopology()) {
         int num_numanodes = hwloc_get_nbobjs_by_type(hwloc_topology, HWLOC_OBJ_NUMANODE);
         return std::max(1, num_numanodes);
@@ -30,15 +31,25 @@ int NumNUMANodes() {
     }
 }
 
+
 hwloc_obj_t GetHWLocTypeIndex(hwloc_obj_type_t tp, int index) {
-  hwloc_obj_t obj = nullptr;
-  if (index >= 0) {
-    while ((obj = hwloc_get_next_obj_by_type(hwloc_topology, tp, obj)) !=
-           nullptr) {
-      if (obj->os_index == index) break;
+  if (HaveHwlocTopology()) {
+    hwloc_obj_t obj = nullptr;
+    if (index >= 0) {
+        while ((obj = hwloc_get_next_obj_by_type(hwloc_topology, tp, obj)) !=
+            nullptr) {
+        if (obj->os_index == index) break;
+        }
     }
+    return obj;
   }
-  return obj;
+  return NULL;
+}
+
+//Assume all nodes have same number of cores
+int NUMANumCoresPerNode() {
+    hwloc_obj_t node_0 = GetHWLocTypeIndex(HWLOC_OBJ_NUMANODE, 0);
+    return hwloc_bitmap_weight(node_0->cpuset);
 }
 
 int NUMAThreadBind(int node) {
