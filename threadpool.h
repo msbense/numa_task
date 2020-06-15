@@ -8,6 +8,7 @@
 #include <sstream>
 #include "blocking_queue.h"
 
+//TODO track workload stats, memory access patterns
 class ThreadPool {
 
     public:
@@ -49,7 +50,6 @@ class ThreadPool {
         std::function<void()> thread_init_; //Have each thread run a method before starting
         void ThreadWorkLoop() {
             if (thread_init_ != NULL) thread_init_();
-
             while (active_ || !queue_.Empty()) {
                 std::function<void()> f(queue_.Dequeue());
                 if (f != NULL) {
