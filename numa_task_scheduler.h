@@ -36,7 +36,7 @@ class NUMATaskScheduler {
                 (*i).Schedule(f);
             }
             else if (bind_pref == NUMABindPolicy::kNonStrict) {
-                if ((*i).NumInactiveThreads > 0) {
+                if ((*i).NumInactiveThreads() > 0) {
                     
                 }
             }   
