@@ -11,8 +11,6 @@ enum class NUMABindPolicy {
 };
 
 //TODO memory binding policies
-//Note (relevant later): hwloc get_area_membind() takes ~36k microseconds for the first call,
-//                          each additional call ~1 microsecond (on cloudlab c220g1)
 class NUMATaskScheduler {
     
     public:

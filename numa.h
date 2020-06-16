@@ -7,7 +7,7 @@ const int kNUMANoAffinity = -1;
 
 static hwloc_topology_t hwloc_topology;
 
-//First call ~= 36k us
+//First call ~= 36k us on cloudlab c220g1
 bool HaveHwlocTopology() {
     static bool init = [](){
         if (hwloc_topology_init(&hwloc_topology)) {
@@ -112,7 +112,7 @@ int NUMAGetThreadNodeAffinity() {
   }
 }
 
-//Each call ~= 1us
+//Each call ~= 1us on cloudlab c220g1
 int NUMAGetMemAffinity(hwloc_topology_t &hwloc_topology, const void* addr) {
     int node = -1;
     if (HaveHwlocTopology()) {
