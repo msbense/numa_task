@@ -7,6 +7,7 @@ const int kNUMANoAffinity = -1;
 
 static hwloc_topology_t hwloc_topology;
 
+//First call ~= 36k us
 bool HaveHwlocTopology() {
     static bool init = [](){
         if (hwloc_topology_init(&hwloc_topology)) {
@@ -109,4 +110,28 @@ int NUMAGetThreadNodeAffinity() {
     hwloc_bitmap_free(thread_cpuset);
     return node_index;
   }
+}
+
+//Each call ~= 1us
+int NUMAGetMemAffinity(hwloc_topology_t &hwloc_topology, const void* addr) {
+    int node = -1;
+    if (HaveHwlocTopology()) {
+        hwloc_nodeset_t nodeset = hwloc_bitmap_alloc();
+        if (!hwloc_get_area_memlocation(hwloc_topology, addr, 4, nodeset,
+                                        HWLOC_MEMBIND_BYNODESET)) {
+            hwloc_obj_t obj = nullptr;
+            while ((obj = hwloc_get_next_obj_by_type(
+                        hwloc_topology, HWLOC_OBJ_NUMANODE, obj)) != nullptr) {
+                if (hwloc_bitmap_isincluded(nodeset, obj->nodeset)) {
+                    // std::cout << "node " << obj->os_index << std::endl;
+                    node = obj->os_index;
+                    break;
+                }
+            }
+            hwloc_bitmap_free(nodeset);
+        } else {
+            std::cerr << "Failed call to hwloc_get_area_memlocation.";
+        }
+    }
+    return node;
 }
