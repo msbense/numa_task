@@ -22,16 +22,6 @@ bool HaveHwlocTopology() {
     return init;
 }
 
-int NUMANumNodes() {
-    if (HaveHwlocTopology()) {
-        int num_numanodes = hwloc_get_nbobjs_by_type(hwloc_topology, HWLOC_OBJ_NUMANODE);
-        return std::max(1, num_numanodes);
-    } else {
-        return 1;
-    }
-}
-
-
 hwloc_obj_t GetHWLocTypeIndex(hwloc_obj_type_t tp, int index) {
   if (HaveHwlocTopology()) {
     hwloc_obj_t obj = nullptr;
@@ -44,6 +34,15 @@ hwloc_obj_t GetHWLocTypeIndex(hwloc_obj_type_t tp, int index) {
     return obj;
   }
   return NULL;
+}
+
+int NUMANumNodes() {
+    if (HaveHwlocTopology()) {
+        int num_numanodes = hwloc_get_nbobjs_by_type(hwloc_topology, HWLOC_OBJ_NUMANODE);
+        return std::max(1, num_numanodes);
+    } else {
+        return 1;
+    }
 }
 
 //Assume all nodes have same number of cores

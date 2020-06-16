@@ -15,11 +15,11 @@ int main(int argc, char** argv) {
     };
     // pool.Schedule(f);
 // }
-    NUMATaskScheduler nts;
+    // NUMATaskScheduler nts;
     
-    if (nts.Schedule(f, 0, NUMABindPolicy::kStrict)) {
-        VLog("Task scheduled");
-    }
+    // if (nts.Schedule(f, 0, NUMABindPolicy::kStrict)) {
+    //     VLog("Task scheduled");
+    // }
     // std::this_thread::sleep_for(std::chrono::seconds(3));
     return 0;
 }
