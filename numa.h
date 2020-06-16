@@ -78,7 +78,7 @@ void *NUMAMalloc(int size, int node) {
         }
     }
     else{
-      ELog("Couldn't allocate on specified node");
+      ELog("Couldn't allocate on specified numa node");
       return malloc(size);  
     } 
 }
@@ -113,7 +113,7 @@ int NUMAGetThreadNodeAffinity() {
 }
 
 //Each call ~= 1us on cloudlab c220g1
-int NUMAGetMemAffinity(hwloc_topology_t &hwloc_topology, const void* addr) {
+int NUMAGetMemAffinity(const void* addr) {
     int node = -1;
     if (HaveHwlocTopology()) {
         hwloc_nodeset_t nodeset = hwloc_bitmap_alloc();
@@ -123,7 +123,6 @@ int NUMAGetMemAffinity(hwloc_topology_t &hwloc_topology, const void* addr) {
             while ((obj = hwloc_get_next_obj_by_type(
                         hwloc_topology, HWLOC_OBJ_NUMANODE, obj)) != nullptr) {
                 if (hwloc_bitmap_isincluded(nodeset, obj->nodeset)) {
-                    // std::cout << "node " << obj->os_index << std::endl;
                     node = obj->os_index;
                     break;
                 }
@@ -134,4 +133,23 @@ int NUMAGetMemAffinity(hwloc_topology_t &hwloc_topology, const void* addr) {
         }
     }
     return node;
+}
+
+int NUMASetMemAffinity(void* addr, size_t size, int node) {
+    if (HaveHwlocTopology()) {
+        hwloc_obj_t numa_node = GetHWLocTypeIndex(HWLOC_OBJ_NUMANODE, node);
+        if (numa_node) {
+            int err = hwloc_set_area_membind(hwloc_topology, addr, size, 
+                                    numa_node->nodeset, HWLOC_MEMBIND_BIND, HWLOC_MEMBIND_BYNODESET | HWLOC_MEMBIND_STRICT | HWLOC_MEMBIND_MIGRATE);
+            if (err < 0) {
+                ELog("Error when binding memory to numa node");
+                return -1;
+            }
+        }
+        else {
+            ELog("Could not find numa_node");
+            return -2;
+        }
+    }
+    return 0;
 }
